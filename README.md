@@ -62,7 +62,7 @@ NebulaGate operates on a multi-layered defense mechanism:
 <img width="1666" height="827" alt="image" src="https://github.com/user-attachments/assets/23b58519-053c-4f51-ba31-c9ccb6db975f" />
 
 Users' private keys (Secret Keys) are never shared with NebulaGate. All on-chain transactions are securely signed via the Freighter wallet with explicit user consent.
-## 📺 Live Demo
-[![NebulaGate Project Demo](https://cdn.loom.com/sessions/thumbnails/31e83e27eea4450db13198597d906851-with-play.gif)](https://www.loom.com/share/31e83e27eea4450db13198597d906851)
+## 📺 Project Demo Video
+[![Watch the Demo](https://img.shields.io/badge/Loom-Video_Demo-blue?style=for-the-badge&logo=loom)](https://www.loom.com/share/31e83e27eea4450db13198597d906851)
 
-*Click the image above to watch the full project walkthrough.*
+[Click here to watch the full NebulaGate walkthrough on Loom](https://www.loom.com/share/31e83e27eea4450db13198597d906851)

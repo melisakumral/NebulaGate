@@ -434,7 +434,23 @@ export default function App() {
       setWalletLoading(true)
       const addr = await connectWallet()
       setWalletAddress(addr)
-    } catch { /* */ } finally { setWalletLoading(false) }
+    } catch (error) {
+      const err = error as Error
+      let message = 'Failed to connect wallet'
+      
+      if (err.message.includes('FREIGHTER_NOT_INSTALLED')) {
+        message = 'Freighter wallet extension is not installed. Please install it from freighter.app'
+      } else if (err.message.includes('FREIGHTER_NOT_CONNECTED')) {
+        message = 'Please connect your Freighter wallet first'
+      } else if (err.message.includes('WALLET_NOT_CONNECTED')) {
+        message = 'Failed to get wallet address. Please try again'
+      }
+      
+      alert(message)
+      console.error('Wallet connection error:', err)
+    } finally {
+      setWalletLoading(false)
+    }
   }
 
   // ── OnBoarding kaydet ────────────────────────────────────────────────

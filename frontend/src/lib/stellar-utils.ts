@@ -5,6 +5,13 @@
  * Deploy sonrası: DEMO_MODE = false, CONTRACT_ID = gerçek ID
  */
 
+// Freighter global tip tanımı
+declare global {
+  interface Window {
+    freighter?: unknown
+  }
+}
+
 import {
   Contract,
   Networks,
@@ -23,7 +30,7 @@ import type { AccessResult, AccessEntry } from '../types'
 
 export const SOROBAN_RPC_URL = 'https://soroban-testnet.stellar.org'
 export const NETWORK_PASSPHRASE = Networks.TESTNET
-export const CONTRACT_ID = 'PLACEHOLDER_CONTRACT_ID'
+export const CONTRACT_ID = 'CDPH6H6M7BXY27KGWOK7QFOQVJNE3ZM4UE45VQ54TXQJQ7FWVBQAAWU5'
 export const TREASURY_ADDRESS = 'GDQELTAUPWALCHCBDDO34PQ2KQQ2RQYHS247YDLMBO767OFEHXDO6YDZ'
 
 /** true → demo mod (Freighter/deploy gerekmez). Deploy sonrası false yap. */
@@ -53,51 +60,34 @@ async function callWithRetry<T>(
 
 async function freighterIsConnected(): Promise<boolean> {
   try {
-    // @stellar/freighter-api v3: default export veya named export
-    const mod = await import('@stellar/freighter-api')
-    const fn = (mod as Record<string, unknown>).isConnected ?? (mod as Record<string, unknown>).default
-    if (typeof fn === 'function') {
-      const result = await (fn as () => Promise<boolean | { isConnected: boolean }>)()
-      if (typeof result === 'boolean') return result
-      if (typeof result === 'object' && result !== null) return (result as { isConnected: boolean }).isConnected
-    }
-    return false
+    if (!window.freighter) return false
+    const { isConnected } = await import('@stellar/freighter-api')
+    return await isConnected()
   } catch {
     return false
   }
 }
 
 async function freighterGetPublicKey(): Promise<string> {
-  const mod = await import('@stellar/freighter-api')
-  // v3: getAddress() veya getPublicKey()
-  const getAddress = (mod as Record<string, unknown>).getAddress
-  const getPublicKey = (mod as Record<string, unknown>).getPublicKey
-  if (typeof getAddress === 'function') {
-    const result = await (getAddress as () => Promise<{ address: string } | string>)()
-    if (typeof result === 'string') return result
-    if (typeof result === 'object' && result !== null) return (result as { address: string }).address
+  try {
+    const { getPublicKey } = await import('@stellar/freighter-api')
+    return await getPublicKey()
+  } catch (error) {
+    console.error('Freighter getPublicKey error:', error)
+    throw new Error('FREIGHTER_GET_PUBLIC_KEY_FAILED')
   }
-  if (typeof getPublicKey === 'function') {
-    const result = await (getPublicKey as () => Promise<string>)()
-    return result
-  }
-  throw new Error('FREIGHTER_API_INCOMPATIBLE')
 }
 
 async function freighterSignTransaction(xdrStr: string): Promise<string> {
-  const mod = await import('@stellar/freighter-api')
-  const signTx = (mod as Record<string, unknown>).signTransaction
-  if (typeof signTx === 'function') {
-    const result = await (signTx as (
-      xdr: string,
-      opts: { networkPassphrase: string },
-    ) => Promise<string | { signedTxXdr: string }>)(xdrStr, {
+  try {
+    const { signTransaction } = await import('@stellar/freighter-api')
+    return await signTransaction(xdrStr, {
       networkPassphrase: NETWORK_PASSPHRASE,
     })
-    if (typeof result === 'string') return result
-    if (typeof result === 'object' && result !== null) return (result as { signedTxXdr: string }).signedTxXdr
+  } catch (error) {
+    console.error('Freighter signTransaction error:', error)
+    throw new Error('FREIGHTER_SIGN_FAILED')
   }
-  throw new Error('FREIGHTER_SIGN_FAILED')
 }
 
 // ─── Connect Wallet ────────────────────────────────────────────────────────
@@ -112,11 +102,22 @@ export async function connectWallet(): Promise<string> {
     return addr
   }
 
+  // Freighter yüklü mü kontrol et
+  if (!window.freighter) {
+    throw new Error('FREIGHTER_NOT_INSTALLED: Please install Freighter wallet extension')
+  }
+
   const connected = await freighterIsConnected()
-  if (!connected) throw new Error('FREIGHTER_NOT_INSTALLED')
+  if (!connected) {
+    throw new Error('FREIGHTER_NOT_CONNECTED: Please connect your Freighter wallet')
+  }
 
   const publicKey = await freighterGetPublicKey()
-  if (!publicKey) throw new Error('WALLET_NOT_CONNECTED')
+  if (!publicKey) {
+    throw new Error('WALLET_NOT_CONNECTED: Failed to get public key from Freighter')
+  }
+  
+  console.log('Wallet connected:', publicKey)
   return publicKey
 }
 

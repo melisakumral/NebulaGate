@@ -27,7 +27,10 @@
 - [Kontrat](https://stellar.expert/explorer/testnet/contract/CDPH6H6M7BXY27KGWOK7QFOQVJNE3ZM4UE45VQ54TXQJQ7FWVBQAAWU5)
 - [Deploy TX](https://stellar.expert/explorer/testnet/tx/27f41b48ceebcce58ffbc799a4a092f909ad7b1d948af0792e38d6e7f96b67de)
 
-### Contract 
+Transaction submitted successfully! CDPH6H6M7BXY27KGWOK7QFOQVJNE3ZM4UE45VQ54TXQJQ7FWVBQAAWU5
+­https://stellar.expert/explorer/testnet/tx/27f41b48ceebcce58ffbc799a4a092f909ad7b1d948af0792e38d6e7f96b67de  
+­https://lab.stellar.org/r/testnet/contract/CDPH6H6M7BXY27KGWOK7QFOQVJNE3ZM4UE45VQ54TXQJQ7FWVBQAAWU5
+
 
 ---
 
